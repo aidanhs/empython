@@ -1,0 +1,12 @@
+diff --git a/pyconfig.h.orig b/pyconfig.h
+--- a/pyconfig.h
++++ b/pyconfig.h
+@@ -269,7 +269,7 @@
+ 
+ /* Define if we can use gcc inline assembler to get and set x87 control word
+    */
+-#define HAVE_GCC_ASM_FOR_X87 1
++#undef HAVE_GCC_ASM_FOR_X87
+ 
+ /* Define if you have the getaddrinfo function. */
+ #define HAVE_GETADDRINFO 1

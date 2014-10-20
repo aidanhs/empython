@@ -1,0 +1,21 @@
+      Module.FS = FS;
+      Module.ENV = ENV;
+      root['Module'] = Module;
+    }
+  };
+
+  root.empython();
+  // Undo pollution of window
+  delete window.Module;
+
+  // Init emscripten stuff
+  root.Module.run();
+
+  root.Initialize = root.Module.cwrap('Py_Initialize', 'number', []);
+  root.Run = root.Module.cwrap('PyRun_SimpleString', 'number', [
+      'string'  // string to eval
+  ]);
+
+  return root;
+
+})();
