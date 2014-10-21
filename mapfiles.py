@@ -3,11 +3,13 @@
 import os
 import sys
 
-BASEDIR = '/lib/python2.7'
+BASEDIR = '/usr/local/lib/python2.7'
 
 def main(root):
     os.chdir(root)
-    commands = ['ENV["PYTHONHOME"] = "%s";' % (BASEDIR,)]
+    # http://bugs.python.org/issue22689
+    #commands = ['ENV["PYTHONHOME"] = "%s";' % (BASEDIR,)]
+    commands = []
     commands.append('FS.createPath("%s", "%s", true, true);' % ('/', BASEDIR[1:]))
     for (dirpath, dirnames, filenames) in os.walk('.'):
         jsdir = os.path.abspath(os.path.join(BASEDIR, dirpath))
