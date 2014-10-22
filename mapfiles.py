@@ -26,6 +26,14 @@ def main(root):
             contents = ','.join(str(ord(i)) for i in open(full_path + 'c', 'rb').read())
             commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (jsdir, filename + 'c', contents))
 
+    # _sysconfigdata is created by the build process
+    scd_dir = '../build/lib.linux-x86_64-2.7'
+    scd_name = '_sysconfigdata.py'
+    scd_path = os.path.join(scd_dir, scd_name)
+    py_compile.compile(scd_path, scd_path + 'c')
+    contents = ','.join(str(ord(i)) for i in open(scd_path + 'c', 'rb').read())
+    commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (BASEDIR, scd_name + 'c', contents))
+
     # Start out in a writeable folder.
     commands.append('FS.createFolder(".", "sandbox", true, true);')
     commands.append('FS.currentPath = "/sandbox";')
