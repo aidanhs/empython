@@ -21,17 +21,15 @@ prep:
 	#sudo apt-get install gcc-multilib
 	./configure
 	make Parser/pgen python
-	cp Makefile ../Makefile.native
+	#cp Makefile ../Makefile.native
 	#cp Parser/pgen ../pgen.native
 	cp python ../python.native
 	make clean
 	git clean -f -x -d
 	#
-	(export BASECFLAGS="-m32" && export LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
+	(export BASECFLAGS=-m32 && export LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
 	git apply ../hacks.patch
 	(export EMCC_FAST_COMPILER=0 && emmake make)
-	#cp ../pgen.native Parser/pgen
-	cp ../python.native python
-	#chmod +x Parser/pgen
-	chmod +x python
+	cp ../python.native python && chmod +x python
+	#cp ../pgen.native Parser/pgen && chmod +x Parser/pgen
 	(export EMCC_FAST_COMPILER=0 && emmake make)
