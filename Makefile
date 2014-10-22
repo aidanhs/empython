@@ -11,7 +11,7 @@ lp.js: lp.bc
 	(cd python/Lib/ && python ../../mapfiles.py .) > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
 	EMCC_FAST_COMPILER=0 emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $< \
-		python/Modules/_weakref.o
+		python/Modules/_weakref.o python/Python/graminit.o
 
 #lp.bc:
 #	TODO
