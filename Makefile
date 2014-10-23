@@ -13,7 +13,7 @@ EMEXPORTS=\
 	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']"
 
 lp.js: libpython.a
-	(cd python/Lib/ && python ../../mapfiles.py .) > js/postJs.js
+	python mapfiles.py python/Lib > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
 	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
 
