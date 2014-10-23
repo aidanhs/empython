@@ -7,14 +7,10 @@ EMFLAGS=\
 EMEXPORTS=\
 	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']"
 
-lp.js: lp.bc
+lp.js: libpython.a
 	(cd python/Lib/ && python ../../mapfiles.py .) > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
-	EMCC_FAST_COMPILER=0 emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $< \
-		python/Modules/_weakref.o python/Python/graminit.o
-
-#lp.bc:
-#	TODO
+	EMCC_FAST_COMPILER=0 emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
 
 CONFFLAGS="OPT=-O0 --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6"
 prep:
