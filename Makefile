@@ -2,6 +2,7 @@ EMFLAGS=\
 	--pre-js js/preJs.js --post-js js/postJs.js\
 	-s ASSERTIONS=2 -s INCLUDE_FULL_LIBRARY=1\
 	-O0 -s ASM_JS=0\
+	--memory-init-file 0 \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1\
 	#--llvm-lto 1 #--minify 0 #-g --closure 0 --llvm-lto 0
 
