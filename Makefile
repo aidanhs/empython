@@ -1,7 +1,8 @@
 EMFLAGS=\
 	--pre-js js/preJs.js --post-js js/postJs.js\
 	-s ASSERTIONS=1 -s INCLUDE_FULL_LIBRARY=1\
-	-O0 -s ASM_JS=0 -s NAMED_GLOBALS=1 \
+	-O0 -s ASM_JS=0\
+	-s EMULATE_FUNCTION_POINTER_CASTS=1\
 	#--llvm-lto 1 #--minify 0 #-g --closure 0 --llvm-lto 0
 
 EMEXPORTS=\
@@ -10,7 +11,7 @@ EMEXPORTS=\
 lp.js: libpython.a
 	(cd python/Lib/ && python ../../mapfiles.py .) > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
-	EMCC_FAST_COMPILER=0 emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
+	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
 
 CONFFLAGS="OPT=-O0 --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6"
 prep:
@@ -25,7 +26,7 @@ prep:
 	#
 	(export BASECFLAGS=-m32 && export LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
 	git apply ../hacks.patch
-	(export EMCC_FAST_COMPILER=0 && emmake make)
+	emmake make
 	cp ../python.native python && chmod +x python
 	#cp ../pgen.native Parser/pgen && chmod +x Parser/pgen
-	(export EMCC_FAST_COMPILER=0 && emmake make)
+	emmake make
