@@ -4,11 +4,15 @@ COPT=$$([ $(OPT) ] && echo -O2 || echo -O0)
 
 EMDEBUG=\
 	-O0\
+	-g3\
+	--js-opts 0\
 	-s ASSERTIONS=2\
 	-s ASM_JS=0
 
 EMOPT=\
 	-O2\
+	-g0\
+	--js-opts 1\
 	-s ASSERTIONS=0\
 	-s ASM_JS=1\
 	#--llvm-lto 1\
