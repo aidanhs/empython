@@ -1,7 +1,7 @@
 EMFLAGS=\
 	--pre-js js/preJs.js --post-js js/postJs.js\
 	-s ASSERTIONS=2 -s INCLUDE_FULL_LIBRARY=1\
-	-O0 -s ASM_JS=0\
+	-O2 -s ASM_JS=0\
 	--memory-init-file 0 \
 	-s EMULATE_FUNCTION_POINTER_CASTS=1\
 	#--llvm-lto 1 #--minify 0 #-g --closure 0 --llvm-lto 0
@@ -14,7 +14,7 @@ lp.js: libpython.a
 	cat js/postJs.js.in >> js/postJs.js
 	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
 
-CONFFLAGS="OPT=-O0 --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6"
+CONFFLAGS="OPT=-O2 --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6"
 prep:
 	#sudo apt-get install gcc-multilib
 	./configure
