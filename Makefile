@@ -1,17 +1,25 @@
+# Enable optimisations by default
 OPT?=1
 COPT=$$([ $(OPT) ] && echo -O2 || echo -O0)
-EOPT=$$([ $(OPT) ] && echo -O3 || echo -O0)
+
+EMDEBUG=\
+	-O0\
+	-s ASSERTIONS=2\
+	-s ASM_JS=0
+
+EMOPT=\
+	-O2\
+	-s ASSERTIONS=0\
+	-s ASM_JS=1\
+	#--llvm-lto 1\
+	#--closure 0
 
 EMFLAGS=\
 	--pre-js js/preJs.js --post-js js/postJs.js\
-	$(EOPT)\
 	--memory-init-file 0\
-	-s ASM_JS=0\
-	-s ASSERTIONS=2\
 	-s INCLUDE_FULL_LIBRARY=1\
 	-s EMULATE_FUNCTION_POINTER_CASTS=1\
-	#--llvm-lto 1\
-	#--closure 0
+	$$([ $(OPT) ] && echo $(EMOPT) || echo $(EMDEBUG))
 
 EMEXPORTS=\
 	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']"
