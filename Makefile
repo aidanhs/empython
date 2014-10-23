@@ -1,10 +1,13 @@
 EMFLAGS=\
 	--pre-js js/preJs.js --post-js js/postJs.js\
-	-s ASSERTIONS=2 -s INCLUDE_FULL_LIBRARY=1\
-	-O2 -s ASM_JS=0\
-	--memory-init-file 0 \
+	-O2\
+	--memory-init-file 0\
+	-s ASM_JS=0\
+	-s ASSERTIONS=2\
+	-s INCLUDE_FULL_LIBRARY=1\
 	-s EMULATE_FUNCTION_POINTER_CASTS=1\
-	#--llvm-lto 1 #--minify 0 #-g --closure 0 --llvm-lto 0
+	#--llvm-lto 1\
+	#--closure 0
 
 EMEXPORTS=\
 	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']"
