@@ -1,6 +1,10 @@
+OPT?=1
+COPT=$$([ $(OPT) ] && echo -O2 || echo -O0)
+EOPT=$$([ $(OPT) ] && echo -O3 || echo -O0)
+
 EMFLAGS=\
 	--pre-js js/preJs.js --post-js js/postJs.js\
-	-O2\
+	$(EOPT)\
 	--memory-init-file 0\
 	-s ASM_JS=0\
 	-s ASSERTIONS=2\
@@ -17,7 +21,7 @@ lp.js: libpython.a
 	cat js/postJs.js.in >> js/postJs.js
 	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
 
-CONFFLAGS="OPT=-O2 --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6"
+CONFFLAGS="OPT=$(COPT) --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6"
 prep:
 	#sudo apt-get install gcc-multilib
 	./configure
