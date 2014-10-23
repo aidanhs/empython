@@ -13,8 +13,25 @@ def main(root):
     commands = []
     commands.append('FS.createPath("%s", "%s", true, true);' % ('/', BASEDIR[1:]))
     for (dirpath, dirnames, filenames) in os.walk('.'):
-        if 'tests' in dirnames: dirnames.remove('tests')
-        if 'test' in dirnames: dirnames.remove('test')
+        for dirname in dirnames[:]:
+            should_remove = any([
+                dirname in ['tests', 'test'], # python 3 tests will error!
+                dirname == 'unittest', # gets crippled by the above
+                dirname.startswith('plat-') and dirname != 'plat-linux2', # emscripten is ~linux
+                dirname == 'lib2to3', # we don't package the necessary grammar files
+                dirname in ['idlelib', 'lib-tk'], # Tk doesn't even compile yet
+                dirname == 'ctypes', # we obviously can't call C functions
+                dirname == 'distutils', # not going to be running pip any time soon
+                dirname == 'bsddb', # needs compiling, deprecated anyway
+                dirname == 'multiprocessing', # doesn't really make sense in JS
+                dirname == 'curses', # we don't have the terminal interface (yet)
+                dirname == 'sqlite3', # doesn't get compiled yet
+                dirname == 'msilib', # doesn't get compiled and who cares anyway
+                dirname == 'hotshot', # doesn't get compiled, unmaintained
+                dirname == 'wsgiref', # not going to be building any web servers
+            ])
+            if should_remove:
+                dirnames.remove(dirname)
         jsdir = os.path.abspath(os.path.join(BASEDIR, dirpath))
         for folder in dirnames:
             commands.append('FS.createFolder("%s", "%s", true, true);' % (jsdir, folder))
