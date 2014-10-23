@@ -38,7 +38,7 @@ def main(root):
         for filename in filenames:
             if not filename.endswith('.py'): continue
             full_path = os.path.join(dirpath, filename)
-            # We compile to get rid of a strange parser error
+            # We compile to save space and time in the parser
             py_compile.compile(full_path, full_path + 'c')
             contents = ','.join(str(ord(i)) for i in open(full_path + 'c', 'rb').read())
             commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (jsdir, filename + 'c', contents))
