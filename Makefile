@@ -25,7 +25,7 @@ prep:
 	make clean
 	git clean -f -x -d
 	#
-	(export BASECFLAGS=-m32 && export LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
+	(export BASECFLAGS=-m32 LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
 	git apply ../hacks.patch
 	emmake make
 	cp ../python.native python && chmod +x python
