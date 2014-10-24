@@ -6,16 +6,19 @@ EMDEBUG=\
 	-O0\
 	-g3\
 	--js-opts 0\
+	--llvm-opts 0\
+	--llvm-lto 0\
 	-s ASSERTIONS=2\
 	-s ASM_JS=0
 
 EMOPT=\
-	-O2\
+	-O3\
 	-g0\
 	--js-opts 1\
+	--llvm-opts 3\
+	--llvm-lto 3\
 	-s ASSERTIONS=0\
 	-s ASM_JS=1\
-	#--llvm-lto 1\
 	#--closure 0
 
 EMFLAGS=\
