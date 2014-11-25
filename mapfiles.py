@@ -6,6 +6,18 @@ import py_compile
 
 BASEDIR = '/usr/local/lib/python2.7'
 
+def mk_file(dname, fname, target):
+    fpath = os.path.join(dname, fname)
+    if fname.endswith('.py'):
+        # We compile to save space and time in the parser
+        py_compile.compile(fpath, fpath + 'c')
+        fpath += 'c'
+        fname += 'c'
+    else:
+        return ''
+    contents = ','.join(str(ord(i)) for i in open(fpath, 'rb').read())
+    return 'FS.createDataFile("%s", "%s", [%s], true, true);' % (target, fname, contents)
+
 def main(root):
     os.chdir(root)
     # http://bugs.python.org/issue22689
@@ -32,30 +44,21 @@ def main(root):
             ])
             if should_remove:
                 dirnames.remove(dirname)
-        jsdir = os.path.abspath(os.path.join(BASEDIR, dirpath))
-        for folder in dirnames:
-            commands.append('FS.createFolder("%s", "%s", true, true);' % (jsdir, folder))
+
+        target = os.path.abspath(os.path.join(BASEDIR, dirpath))
+        for dname in dirnames:
+            commands.append('FS.createFolder("%s", "%s", true, true);' % (target, dname))
         for filename in filenames:
-            if not filename.endswith('.py'): continue
-            full_path = os.path.join(dirpath, filename)
-            # We compile to save space and time in the parser
-            py_compile.compile(full_path, full_path + 'c')
-            contents = ','.join(str(ord(i)) for i in open(full_path + 'c', 'rb').read())
-            commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (jsdir, filename + 'c', contents))
+            commands.append(mk_file(dirpath, filename, target))
 
     # _sysconfigdata is created by the build process
-    scd_dir = '../build/lib.linux-x86_64-2.7'
-    scd_name = '_sysconfigdata.py'
-    scd_path = os.path.join(scd_dir, scd_name)
-    py_compile.compile(scd_path, scd_path + 'c')
-    contents = ','.join(str(ord(i)) for i in open(scd_path + 'c', 'rb').read())
-    commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (BASEDIR, scd_name + 'c', contents))
+    commands.append(mk_file('../build/lib.linux-x86_64-2.7', '_sysconfigdata.py', BASEDIR))
 
     # Start out in a writeable folder.
     commands.append('FS.createFolder(".", "sandbox", true, true);')
     commands.append('FS.currentPath = "/sandbox";')
 
-    print '\n'.join(commands)
+    print '\n'.join([c for c in commands if c != ''])
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
