@@ -36,7 +36,7 @@ lp.js: libpython.a
 	cat js/postJs.js.in >> js/postJs.js
 	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
 
-CONFFLAGS="OPT=$(COPT) --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6"
+CONFFLAGS=OPT=$(COPT) --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6
 prep:
 	#sudo apt-get install gcc-multilib
 	./configure
