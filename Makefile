@@ -46,10 +46,10 @@ prep:
 	cp python ../python.native
 	make clean
 	git clean -f -x -d
-	#
+em:
 	(export BASECFLAGS=-m32 LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
 	git apply ../hacks.patch
-	emmake make
+	emmake make || true # errors on running python
 	cp ../python.native python && chmod +x python
 	#cp ../pgen.native Parser/pgen && chmod +x Parser/pgen
 	emmake make
