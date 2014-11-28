@@ -1,6 +1,6 @@
 # Enable optimisations by default
-OPT?=1
-COPT=$$([ $(OPT) ] && echo -O2 || echo -O0)
+EMPYOPT?=1
+COPT=$$([ $(EMPYOPT) = 1 ] && echo -O2 || echo "-O0 -g")
 
 EMDEBUG=\
 	-O0\
@@ -26,7 +26,7 @@ EMFLAGS=\
 	--memory-init-file 0\
 	-s INCLUDE_FULL_LIBRARY=1\
 	-s EMULATE_FUNCTION_POINTER_CASTS=1\
-	$$([ $(OPT) ] && echo $(EMOPT) || echo $(EMDEBUG))
+	$$([ $(EMPYOPT) = 1 ] && echo $(EMOPT) || echo $(EMDEBUG))
 
 EMEXPORTS=\
 	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']"
@@ -36,7 +36,7 @@ lp.js: libpython.a
 	cat js/postJs.js.in >> js/postJs.js
 	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
 
-CONFFLAGS=OPT=$(COPT) --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6
+CONFFLAGS=OPT="$(COPT)" --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6
 prep:
 	#sudo apt-get install gcc-multilib
 	./configure
