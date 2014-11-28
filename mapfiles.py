@@ -4,17 +4,17 @@ import os
 import sys
 import py_compile
 
-BASEDIR = '/usr/local/lib/python2.7'
 
 def files_to_datafilecalls(fpaths):
+    basedir = '/usr/local/lib/python2.7'
     commands = []
-    dpaths = set([BASEDIR])
+    dpaths = set([basedir])
     for fpath, targetdir in fpaths:
 
         assert targetdir[0] == '.'
         if not fpath.endswith('.py'):
             continue
-        dpath = os.path.abspath(os.path.join(BASEDIR, targetdir))
+        dpath = os.path.abspath(os.path.join(basedir, targetdir))
 
         # We compile to save space and time in the parser
         py_compile.compile(fpath, fpath + 'c')
@@ -29,19 +29,17 @@ def files_to_datafilecalls(fpaths):
             dpaths.add(dpath)
             dpath = os.path.dirname(dpath)
 
-    dpaths.remove(BASEDIR)
+    dpaths.remove(basedir)
     for dpath in sorted(dpaths, key=len, reverse=True):
         commands.insert(0, 'FS.createFolder("%s", "%s", true, true);' % (
             os.path.dirname(dpath), os.path.basename(dpath)
         ))
-    commands.insert(0, 'FS.createPath("/", "' + BASEDIR[1:] + '", true, true);')
+    commands.insert(0, 'FS.createPath("/", "' + basedir[1:] + '", true, true);')
 
     return commands
 
 def main(root):
     os.chdir(root)
-    # http://bugs.python.org/issue22689
-    #commands = ['ENV["PYTHONHOME"] = "%s";' % (BASEDIR,)]
     fpaths = []
     for (dirpath, dirnames, filenames) in os.walk('.'):
         for dirname in dirnames[:]:
@@ -70,16 +68,23 @@ def main(root):
     # _sysconfigdata is created by the build process
     fpaths.append(('../build/lib.linux-x86_64-2.7/_sysconfigdata.py', '.'))
 
-    commands = files_to_datafilecalls(fpaths)
+    if sys.argv[2] == 'datafiles':
+        commands = files_to_datafilecalls(fpaths)
+    else:
+        assert False
 
     # Start out in a writeable folder.
     commands.append('FS.createFolder(".", "sandbox", true, true);')
     commands.append('FS.currentPath = "/sandbox";')
 
+    # http://bugs.python.org/issue22689
+    #commands = ['ENV["PYTHONHOME"] = "%s";' % (pyhomedir,)]
+
     print '\n'.join([c for c in commands if c != ''])
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print 'Usage: %s root' % sys.argv[0]
+    if len(sys.argv) != 3 or sys.argv[2] not in ['datafiles']:
+        print 'Usage: %s root datafiles' % sys.argv[0]
+        sys.exit(1)
     else:
         main(sys.argv[1])
