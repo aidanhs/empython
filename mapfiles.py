@@ -3,8 +3,9 @@
 import os
 import sys
 import py_compile
-from zipfile import PyZipFile, ZIP_DEFLATED
+from zipfile import ZipFile, ZIP_DEFLATED
 from StringIO import StringIO
+from subprocess import check_call
 
 def files_to_datafilecalls(fpaths):
     basedir = '/usr/local/lib/python2.7'
@@ -41,12 +42,13 @@ def files_to_datafilecalls(fpaths):
 
 def files_to_datafilezipcall(fpaths):
     zf = StringIO()
-    zipfile = PyZipFile(zf, 'w', ZIP_DEFLATED)
+    zipfile = ZipFile(zf, 'w', ZIP_DEFLATED)
     for fpath, targetdir in fpaths:
         assert targetdir[0] == '.'
         if not fpath.endswith('.py'):
             continue
-        zipfile.writepy(fpath, targetdir)
+        check_call(['python', '-OO', '-m', 'py_compile', fpath])
+        zipfile.write(fpath + 'o', os.path.join(targetdir, os.path.basename(fpath + 'o')))
     zipfile.close()
 
     target = '/usr/local/lib/python27.zip'
