@@ -13,9 +13,6 @@ def files_to_datafilecalls(fpaths):
     dpaths = set([basedir])
     for fpath, targetdir in fpaths:
 
-        assert targetdir[0] == '.'
-        if not fpath.endswith('.py'):
-            continue
         dpath = os.path.abspath(os.path.join(basedir, targetdir))
 
         # We compile to save space and time in the parser
@@ -44,9 +41,6 @@ def files_to_datafilezipcall(fpaths):
     zf = StringIO()
     zipfile = ZipFile(zf, 'w', ZIP_DEFLATED)
     for fpath, targetdir in fpaths:
-        assert targetdir[0] == '.'
-        if not fpath.endswith('.py'):
-            continue
         check_call(['python', '-OO', '-m', 'py_compile', fpath])
         zipfile.write(fpath + 'o', os.path.join(targetdir, os.path.basename(fpath + 'o')))
     zipfile.close()
@@ -89,6 +83,13 @@ def main(root):
 
     # _sysconfigdata is created by the build process
     fpaths.append(('../build/lib.linux-x86_64-2.7/_sysconfigdata.py', '.'))
+
+    # Some checks and assertions
+    assert all([targetdir[0] == '.' for fpath, targetdir in fpaths])
+    fpaths = [
+        (fpath, targetdir) for fpath, targetdir in fpaths
+        if os.path.splitext(fpath)[1] == '.py'
+    ]
 
     if sys.argv[2] == 'datafiles':
         commands = files_to_datafilecalls(fpaths)
