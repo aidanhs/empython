@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+from __future__ import print_function
 
 import os
 import sys
@@ -26,7 +27,7 @@ def files_to_datafilecalls(fpaths):
 
         dpath = os.path.abspath(os.path.join(basedir, targetdir))
 
-        commands.append('FS.createDataFile("%s", "%s", %s, true, true);' % (
+        commands.append('FS.createDataFile("%s", "%s", %s, true, true)' % (
             dpath, os.path.basename(fpath), mk_contents(open(fpath, 'rb').read())
         ))
 
@@ -37,10 +38,10 @@ def files_to_datafilecalls(fpaths):
 
     dpaths.remove(basedir)
     for dpath in sorted(dpaths, key=len, reverse=True):
-        commands.insert(0, 'FS.createFolder("%s", "%s", true, true);' % (
+        commands.insert(0, 'FS.createFolder("%s", "%s", true, true)' % (
             os.path.dirname(dpath), os.path.basename(dpath)
         ))
-    commands.insert(0, 'FS.createPath("/", "' + basedir[1:] + '", true, true);')
+    commands.insert(0, 'FS.createPath("/", "' + basedir[1:] + '", true, true)')
 
     return commands
 
@@ -53,8 +54,8 @@ def files_to_datafilezipcall(fpaths):
 
     target = '/usr/local/lib/python27.zip'
     commands = []
-    commands.insert(0, 'FS.createPath("/", "' + os.path.dirname(target)[1:] + '", true, true);')
-    commands.append('FS.createDataFile("%s", "%s", %s, true, true);' % (
+    commands.insert(0, 'FS.createPath("/", "' + os.path.dirname(target)[1:] + '", true, true)')
+    commands.append('FS.createDataFile("%s", "%s", %s, true, true)' % (
         os.path.dirname(target), os.path.basename(target), mk_contents(zf.getvalue())
     ))
     return commands
@@ -108,17 +109,17 @@ def main(root):
         assert False
 
     # Start out in a writeable folder.
-    commands.append('FS.createFolder(".", "sandbox", true, true);')
-    commands.append('FS.currentPath = "/sandbox";')
+    commands.append('FS.createFolder(".", "sandbox", true, true)')
+    commands.append('FS.currentPath = "/sandbox"')
 
     # http://bugs.python.org/issue22689
-    #commands = ['ENV["PYTHONHOME"] = "%s";' % (pyhomedir,)]
+    #commands = ['ENV["PYTHONHOME"] = "%s"' % (pyhomedir,)]
 
-    print '\n'.join([c for c in commands if c != ''])
+    print(';'.join([c for c in commands if c != '']) + ';', end='')
 
 if __name__ == '__main__':
     if len(sys.argv) != 3 or sys.argv[2] not in ['datafiles', 'datafilezip']:
-        print 'Usage: %s root datafiles|datafilezip' % sys.argv[0]
+        print('Usage: %s root datafiles|datafilezip' % sys.argv[0], file=sys.stderr)
         sys.exit(1)
     else:
         main(sys.argv[1])
