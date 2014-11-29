@@ -34,7 +34,7 @@ EMEXPORTS=\
 lp.js: libpython.a
 	python mapfiles.py python/Lib datafiles > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
-	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $<
+	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $< python/build/lib.linux-x86_64-2.7/zlib.so
 
 CONFFLAGS=OPT="$(COPT)" --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6
 prep:
@@ -47,6 +47,7 @@ prep:
 	make clean
 	git clean -f -x -d
 em:
+	cd Modules/zlib && emconfigure ./configure && sed -i 's/^AR=.*/\0 rc/' Makefile && emmake make
 	(export BASECFLAGS=-m32 LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
 	git apply ../hacks.patch
 	emmake make || true # errors on running python
