@@ -3,7 +3,8 @@
 import os
 import sys
 import py_compile
-
+from zipfile import PyZipFile, ZIP_DEFLATED
+from StringIO import StringIO
 
 def files_to_datafilecalls(fpaths):
     basedir = '/usr/local/lib/python2.7'
@@ -38,6 +39,25 @@ def files_to_datafilecalls(fpaths):
 
     return commands
 
+def files_to_datafilezipcall(fpaths):
+    zf = StringIO()
+    zipfile = PyZipFile(zf, 'w', ZIP_DEFLATED)
+    for fpath, targetdir in fpaths:
+        assert targetdir[0] == '.'
+        if not fpath.endswith('.py'):
+            continue
+        zipfile.writepy(fpath, targetdir)
+    zipfile.close()
+
+    target = '/usr/local/lib/python27.zip'
+    commands = []
+    commands.insert(0, 'FS.createPath("/", "' + os.path.dirname(target)[1:] + '", true, true);')
+    contents = ','.join(str(ord(i)) for i in zf.getvalue())
+    commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (
+        os.path.dirname(target), os.path.basename(target), contents
+    ))
+    return commands
+
 def main(root):
     os.chdir(root)
     fpaths = []
@@ -70,6 +90,8 @@ def main(root):
 
     if sys.argv[2] == 'datafiles':
         commands = files_to_datafilecalls(fpaths)
+    elif sys.argv[2] == 'datafilezip':
+        commands = files_to_datafilezipcall(fpaths)
     else:
         assert False
 
@@ -83,8 +105,8 @@ def main(root):
     print '\n'.join([c for c in commands if c != ''])
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3 or sys.argv[2] not in ['datafiles']:
-        print 'Usage: %s root datafiles' % sys.argv[0]
+    if len(sys.argv) != 3 or sys.argv[2] not in ['datafiles', 'datafilezip']:
+        print 'Usage: %s root datafiles|datafilezip' % sys.argv[0]
         sys.exit(1)
     else:
         main(sys.argv[1])

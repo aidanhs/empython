@@ -32,7 +32,7 @@ EMEXPORTS=\
 	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']"
 
 lp.js: libpython.a
-	python mapfiles.py python/Lib datafiles > js/postJs.js
+	python mapfiles.py python/Lib datafilezip > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
 	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $< python/build/lib.linux-x86_64-2.7/zlib.so
 
