@@ -70,6 +70,7 @@ def main(root):
                 dirname == 'msilib', # doesn't get compiled and who cares anyway
                 dirname == 'hotshot', # doesn't get compiled, unmaintained
                 dirname == 'wsgiref', # not going to be building any web servers
+                dirname == 'pydoc_data', # don't bundle documentation
             ])
             if should_remove:
                 dirnames.remove(dirname)
