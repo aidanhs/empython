@@ -7,6 +7,9 @@ from zipfile import ZipFile, ZIP_DEFLATED
 from StringIO import StringIO
 from subprocess import check_call
 
+def mk_contents(data):
+    return '[' + ','.join(str(ord(i)) for i in data) + ']'
+
 def files_to_datafilecalls(fpaths):
     basedir = '/usr/local/lib/python2.7'
     commands = []
@@ -15,9 +18,8 @@ def files_to_datafilecalls(fpaths):
 
         dpath = os.path.abspath(os.path.join(basedir, targetdir))
 
-        contents = ','.join(str(ord(i)) for i in open(fpath, 'rb').read())
-        commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (
-            dpath, os.path.basename(fpath), contents
+        commands.append('FS.createDataFile("%s", "%s", %s, true, true);' % (
+            dpath, os.path.basename(fpath), mk_contents(open(fpath, 'rb').read())
         ))
 
         # Make sure we're adding all required directories
@@ -44,9 +46,8 @@ def files_to_datafilezipcall(fpaths):
     target = '/usr/local/lib/python27.zip'
     commands = []
     commands.insert(0, 'FS.createPath("/", "' + os.path.dirname(target)[1:] + '", true, true);')
-    contents = ','.join(str(ord(i)) for i in zf.getvalue())
-    commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (
-        os.path.dirname(target), os.path.basename(target), contents
+    commands.append('FS.createDataFile("%s", "%s", %s, true, true);' % (
+        os.path.dirname(target), os.path.basename(target), mk_contents(zf.getvalue())
     ))
     return commands
 
