@@ -15,9 +15,6 @@ def files_to_datafilecalls(fpaths):
 
         dpath = os.path.abspath(os.path.join(basedir, targetdir))
 
-        # We compile to save space and time in the parser
-        py_compile.compile(fpath, fpath + 'c')
-        fpath += 'c'
         contents = ','.join(str(ord(i)) for i in open(fpath, 'rb').read())
         commands.append('FS.createDataFile("%s", "%s", [%s], true, true);' % (
             dpath, os.path.basename(fpath), contents
@@ -41,8 +38,7 @@ def files_to_datafilezipcall(fpaths):
     zf = StringIO()
     zipfile = ZipFile(zf, 'w', ZIP_DEFLATED)
     for fpath, targetdir in fpaths:
-        check_call(['python', '-OO', '-m', 'py_compile', fpath])
-        zipfile.write(fpath + 'o', os.path.join(targetdir, os.path.basename(fpath + 'o')))
+        zipfile.write(fpath, os.path.join(targetdir, os.path.basename(fpath)))
     zipfile.close()
 
     target = '/usr/local/lib/python27.zip'
@@ -90,6 +86,9 @@ def main(root):
         (fpath, targetdir) for fpath, targetdir in fpaths
         if os.path.splitext(fpath)[1] == '.py'
     ]
+    # Compile to save space and time in the parser
+    check_call(['python', '-OO', '-m', 'py_compile'] + [fpath for fpath, _ in fpaths])
+    fpaths = [(fpath + 'o', targetdir) for fpath, targetdir in fpaths]
 
     if sys.argv[2] == 'datafiles':
         commands = files_to_datafilecalls(fpaths)
