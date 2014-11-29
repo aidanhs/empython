@@ -6,9 +6,17 @@ import py_compile
 from zipfile import ZipFile, ZIP_DEFLATED
 from StringIO import StringIO
 from subprocess import check_call
+import base64
 
 def mk_contents(data):
-    return '[' + ','.join(str(ord(i)) for i in data) + ']'
+    #return '[' + ','.join(str(ord(i)) for i in data) + ']'
+    return (
+        '(function(){'
+        'var t=atob("%s"),a=new Uint8Array(%s),i;'
+        'for(i=0;i<%s;i++)a[i]=t.charCodeAt(i);'
+        'return a'
+        '})()'
+    ) % (base64.b64encode(data), len(data), len(data))
 
 def files_to_datafilecalls(fpaths):
     basedir = '/usr/local/lib/python2.7'
