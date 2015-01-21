@@ -34,7 +34,7 @@ EMEXPORTS=\
 lp.js: libpython.a
 	python mapfiles.py python/Lib datafilezip > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
-	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $< python/build/lib.linux-x86_64-2.7/zlib.so
+	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $< python/Modules/zlib/libz.a
 
 CONFFLAGS=OPT="$(COPT)" --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6
 prep:
