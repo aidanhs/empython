@@ -22,7 +22,7 @@ EMOPT=\
 EMFLAGS=\
 	--pre-js js/preJs.js --post-js js/postJs.js\
 	--memory-init-file 0\
-	-s INCLUDE_FULL_LIBRARY=1\
+	-s INCLUDE_FULL_LIBRARY=0\
 	-s EMULATE_FUNCTION_POINTER_CASTS=1\
 	$$([ $(EMPYOPT) = 1 ] && echo $(EMOPT) || echo $(EMDEBUG))
 
