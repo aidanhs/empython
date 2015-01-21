@@ -9,7 +9,6 @@ EMDEBUG=\
 	--llvm-opts 0\
 	--llvm-lto 0\
 	-s ASSERTIONS=2\
-	-s ASM_JS=0
 
 EMOPT=\
 	-O3\
@@ -18,7 +17,6 @@ EMOPT=\
 	--llvm-opts 3\
 	--llvm-lto 3\
 	-s ASSERTIONS=0\
-	-s ASM_JS=1\
 	#--closure 0
 
 EMFLAGS=\
