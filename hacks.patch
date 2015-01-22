@@ -55,6 +55,15 @@ diff --git a/Modules/Setup b/Modules/Setup
  #strop stropmodule.c		# String manipulations
  #_functools _functoolsmodule.c	# Tools for working with functions and callable objects
  #_elementtree -I$(srcdir)/Modules/expat -DHAVE_EXPAT_CONFIG_H -DUSE_PYEXPAT_CAPI _elementtree.c	# elementtree accelerator
+@@ -434,7 +434,7 @@ itertools itertoolsmodule.c	# Functions creating iterators for efficient looping
+ 
+ 
+ # Helper module for various ascii-encoders
+-#binascii binascii.c
++binascii binascii.c
+ 
+ # Fred Drake's interface to the Python parser
+ #parser parsermodule.c
 @@ -465,6 +465,7 @@ GLHACK=-Dclear=__GLclear
  # This require zlib 1.1.3 (or later).
  # See http://www.gzip.org/zlib/
