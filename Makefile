@@ -1,6 +1,6 @@
 # Enable optimisations by default
 EMPYOPT?=1
-COPT=$$([ $(EMPYOPT) = 1 ] && echo -O2 || echo "-O0 -g")
+COPT=$$([ $(EMPYOPT) = 1 ] && echo -Oz || echo "-O0 -g")
 
 EMDEBUG=\
 	-O0\
