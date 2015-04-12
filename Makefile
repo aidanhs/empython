@@ -49,6 +49,7 @@ em:
 	(export BASECFLAGS=-m32 LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
 	git apply ../hacks.patch
 	emmake make || true # errors on running python
+	mv python python.bc # only useful if replacing the emscripten test .bc file
 	cp ../python.native python && chmod +x python
 	#cp ../pgen.native Parser/pgen && chmod +x Parser/pgen
 	emmake make
