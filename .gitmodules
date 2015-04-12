@@ -1,0 +1,3 @@
+[submodule "lib/empython"]
+	path = lib/empython
+	url = https://github.com/aidanhs/empython.git
