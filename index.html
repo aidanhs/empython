@@ -49,8 +49,28 @@
 
           <button id="python_run">Run!</button>
           <div class="demoarea">
-            <div id="python_in"><textarea>print 123
-print 345</textarea></div>
+            <div id="python_in"><textarea>import zlib, re
+
+print '\nDemo zlib'
+print repr(zlib.compress('abc'))
+
+print '\nDemo re'
+text = 'Does this text match the pattern?'
+print 'Checking "%s"' % (text,)
+for pat in ['this', 'that']:
+    print 'Looking for "%s"' % (pat,),
+    if re.search(pat,  text):
+        print 'found a match!'
+    else:
+        print 'no match'
+
+print '\nDemo yield'
+def firstn(n):
+    num = 0
+    while num &lt; n:
+        yield num
+        num += 1
+print sum(firstn(100))</textarea></div>
             <div id="python_out"><div><pre></pre></div></div>
           </div>
 
