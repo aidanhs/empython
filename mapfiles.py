@@ -20,7 +20,7 @@ def mk_contents(data):
     ) % (base64.b64encode(data), len(data), len(data))
 
 def files_to_datafilecalls(fpaths):
-    basedir = '/usr/local/lib/python2.7'
+    basedir = '/usr/local/lib/python3.5'
     commands = []
     dpaths = set([basedir])
     for fpath, targetdir in fpaths:
@@ -38,9 +38,7 @@ def files_to_datafilecalls(fpaths):
 
     dpaths.remove(basedir)
     for dpath in sorted(dpaths, key=len, reverse=True):
-        commands.insert(0, 'FS.createFolder("%s", "%s", true, true)' % (
-            os.path.dirname(dpath), os.path.basename(dpath)
-        ))
+        commands.insert(0, 'FS.mkdirTree("%s")' % (dpath,))
     commands.insert(0, 'FS.createPath("/", "' + basedir[1:] + '", true, true)')
 
     return commands
@@ -52,7 +50,7 @@ def files_to_datafilezipcall(fpaths):
         zipfile.write(fpath, os.path.join(targetdir, os.path.basename(fpath)))
     zipfile.close()
 
-    target = '/usr/local/lib/python27.zip'
+    target = '/usr/local/lib/python35.zip'
     commands = []
     commands.insert(0, 'FS.createPath("/", "' + os.path.dirname(target)[1:] + '", true, true)')
     commands.append('FS.createDataFile("%s", "%s", %s, true, true)' % (
@@ -89,7 +87,7 @@ def main(root):
             fpaths.append((os.path.join(dirpath, filename), dirpath))
 
     # _sysconfigdata is created by the build process
-    fpaths.append(('../build/lib.linux-x86_64-2.7/_sysconfigdata.py', '.'))
+    fpaths.append(('../build/lib.linux-x86_64-3.5/_sysconfigdata.py', '.'))
 
     # Some checks and assertions
     assert all([targetdir[0] == '.' for fpath, targetdir in fpaths])
@@ -97,9 +95,9 @@ def main(root):
         (fpath, targetdir) for fpath, targetdir in fpaths
         if os.path.splitext(fpath)[1] == '.py'
     ]
-    # Compile to save space and time in the parser
-    check_call(['python', '-OO', '-m', 'py_compile'] + [fpath for fpath, _ in fpaths])
-    fpaths = [(fpath + 'o', targetdir) for fpath, targetdir in fpaths]
+    ## Compile to save space and time in the parser
+    #check_call(['python3', '-OO', '-m', 'py_compile'] + [fpath for fpath, _ in fpaths])
+    #fpaths = [(fpath + 'o', targetdir) for fpath, targetdir in fpaths]
 
     if sys.argv[2] == 'datafiles':
         commands = files_to_datafilecalls(fpaths)
@@ -109,7 +107,7 @@ def main(root):
         assert False
 
     # Start out in a writeable folder.
-    commands.append('FS.createFolder(".", "sandbox", true, true)')
+    commands.append('FS.mkdirTree("/sandbox")')
     commands.append('FS.currentPath = "/sandbox"')
 
     # http://bugs.python.org/issue22689

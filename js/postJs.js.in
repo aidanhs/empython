@@ -1,21 +1,23 @@
       Module.FS = FS;
       Module.ENV = ENV;
-      root['Module'] = Module;
-    }
+      Module.onRuntimeInitialized = onRuntimeInitialized;
+      return Module;
+    })()
   };
 
-  root.empython();
   // Undo pollution of window
   delete window.Module;
 
   // Init emscripten stuff
   root.Module.run();
 
-  root.Initialize = root.Module.cwrap('Py_Initialize', 'number', []);
-  root.Run = root.Module.cwrap('PyRun_SimpleString', 'number', [
-      'string'  // string to eval
-  ]);
-
-  return root;
-
-})();
+  function onRuntimeInitialized() {
+    root.Initialize = root.Module.cwrap('Py_Initialize', 'number', []);
+    root.Run = root.Module.cwrap('PyRun_SimpleString', 'number', [
+        'string'  // string to eval
+    ]);
+    root.Initialize();
+    // empython comes out from this callback
+    initialized_callback(root);
+  }
+};
