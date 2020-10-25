@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen">
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
   <!--<script type="text/javascript" src="javascripts/script.js"></script>-->
-  <script type="text/javascript" src="lib/empython.js"></script>
+  <script type="text/javascript" src="empython.js"></script>
 
   <title>EmPython</title>
   <meta name="description" content="Python compiled with emscripten">
@@ -51,64 +51,64 @@
           <div class="demoarea">
             <div id="python_in"><textarea>import zlib, re
 
-print '\nDemo zlib'
-print repr(zlib.compress('abc'))
+print('\nDemo zlib')
+print(repr(zlib.compress(b'abc')))
 
-print '\nDemo re'
+print('\nDemo re')
 text = 'Does this text match the pattern?'
-print 'Checking "%s"' % (text,)
+print('Checking', text)
 for pat in ['this', 'that']:
-    print 'Looking for "%s"' % (pat,),
+    print('Looking for', pat)
     if re.search(pat,  text):
-        print 'found a match!'
+        print('found a match!')
     else:
-        print 'no match'
+        print('no match')
 
-print '\nDemo yield'
+print('\nDemo yield')
 def firstn(n):
     num = 0
     while num &lt; n:
         yield num
         num += 1
-print sum(firstn(100))</textarea></div>
+print(sum(firstn(100)))</textarea></div>
             <div id="python_out"><div><pre></pre></div></div>
           </div>
 
           <script>
-            function setupRepl(prefix, module) {
+            function setupRepl(prefix) {
               'use strict';
               var $inbox = $('#' + prefix + '_in > textarea');
               var $outbox = $('#' + prefix + '_out > div > pre');
+
+              var mute_output = true;
               var outln = function (val) {
+                if (mute_output) { return; }
                 $outbox.text($outbox.text() + val + '\n');
                 $outbox[0].scrollTop = $outbox[0].scrollHeight;
               }
 
-              var eval_python = (function () {
-                module.Initialize();
-                // Override default printing
-                module.Module.print = module.Module.printErr = outln;
-
-                return function (evalstr) {
+              init_empython(function (empython) {
+                mute_output = false;
+                function eval_python(evalstr) {
                   // TODO: steal https://github.com/replit/empythoned/blob/master/entry_point.js
                   // Unfortunately we don't get result object from PyRun_SimpleString
-                  module.Run(evalstr);
-                };
-              })();
-              $('#' + prefix + '_run').on('click', function () {
-                  eval_python($('#' + prefix + '_in > textarea').val());
-              });
-              $inbox.keydown(function (e) {
-                // Ctrl-Enter pressed
-                if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
-                  outln('>>> ' + $inbox.val());
-                  eval_python($inbox.val());
-                  $inbox.val('');
+                  empython.Run(evalstr);
                 }
-              });
-              eval_python('import sys; print "' + prefix + ' " + sys.version');
+                $('#' + prefix + '_run').on('click', function () {
+                    eval_python($('#' + prefix + '_in > textarea').val());
+                });
+                $inbox.keydown(function (e) {
+                  // Ctrl-Enter pressed
+                  if ((e.keyCode == 10 || e.keyCode == 13) && e.ctrlKey) {
+                    outln('>>> ' + $inbox.val());
+                    eval_python($inbox.val());
+                    $inbox.val('');
+                  }
+                });
+                eval_python('import sys; print("' + prefix + ' " + sys.version)');
+              }, outln);
             }
-            setupRepl('python', empython);
+            setupRepl('python');
           </script>
         </article>
       </div>
