@@ -27,29 +27,25 @@ EMFLAGS=\
 	$$([ $(EMPYOPT) = 1 ] && echo $(EMOPT) || echo $(EMDEBUG))
 
 EMEXPORTS=\
-	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']"
+	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']" -s "EXTRA_EXPORTED_RUNTIME_METHODS=['cwrap']"
 
-lp.js: libpython.a
-	python mapfiles.py python/Lib datafilezip > js/postJs.js
+empython.js: python/libpython3.5.a
+	python2 mapfiles.py python/Lib datafilezip > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
 	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $< python/Modules/zlib/libz.a
 
-CONFFLAGS=OPT="$(COPT)" --without-threads --without-pymalloc --disable-shared --without-signal-module --disable-ipv6
+CONFFLAGS=OPT="$(COPT)" --without-threads --without-pymalloc --disable-shared --disable-ipv6
 prep:
-	#sudo apt-get install gcc-multilib
 	./configure
-	make Parser/pgen python
-	#cp Makefile ../Makefile.native
-	#cp Parser/pgen ../pgen.native
+	make python
 	cp python ../python.native
 	make clean
 	git clean -f -x -d
 em:
-	cd Modules/zlib && emconfigure ./configure && sed -i 's/^AR=.*/\0 rc/' Makefile && emmake make
+	cd Modules/zlib && emconfigure ./configure --static && emmake make libz.a
 	(export BASECFLAGS=-m32 LDFLAGS=-m32 && emconfigure ./configure $(CONFFLAGS))
 	git apply ../hacks.patch
 	emmake make || true # errors on running python
 	mv python python.bc # only useful if replacing the emscripten test .bc file
 	cp ../python.native python && chmod +x python
-	#cp ../pgen.native Parser/pgen && chmod +x Parser/pgen
 	emmake make
