@@ -1,11 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 from __future__ import print_function
 
 import os
 import sys
 import py_compile
 from zipfile import ZipFile, ZIP_DEFLATED
-from StringIO import StringIO
+from io import BytesIO
 from subprocess import check_call
 import base64
 
@@ -17,7 +17,7 @@ def mk_contents(data):
         'for(i=0;i<%s;i++)a[i]=t.charCodeAt(i);'
         'return a'
         '})()'
-    ) % (base64.b64encode(data), len(data), len(data))
+    ) % (base64.b64encode(data).decode('ascii'), len(data), len(data))
 
 def files_to_datafilecalls(fpaths):
     basedir = '/usr/local/lib/python3.5'
@@ -44,7 +44,7 @@ def files_to_datafilecalls(fpaths):
     return commands
 
 def files_to_datafilezipcall(fpaths):
-    zf = StringIO()
+    zf = BytesIO()
     zipfile = ZipFile(zf, 'w', ZIP_DEFLATED)
     for fpath, targetdir in fpaths:
         zipfile.write(fpath, os.path.join(targetdir, os.path.basename(fpath)))

@@ -30,7 +30,7 @@ EMEXPORTS=\
 	-s EXPORTED_FUNCTIONS="['_Py_Initialize', '_PyRun_SimpleString']" -s "EXTRA_EXPORTED_RUNTIME_METHODS=['cwrap']"
 
 empython.js: python/libpython3.5.a
-	python2 mapfiles.py python/Lib datafilezip > js/postJs.js
+	./mapfiles.py python/Lib datafilezip > js/postJs.js
 	cat js/postJs.js.in >> js/postJs.js
 	emcc $(EMFLAGS) $(EMEXPORTS) -o $@ $< python/Modules/zlib/libz.a
 
