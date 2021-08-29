@@ -38,7 +38,7 @@ CONFFLAGS=OPT="$(COPT)" --without-threads --without-pymalloc --disable-shared --
 prep:
 	./configure
 	make python
-	cp python ../python.native
+	cp -r python ../python.native
 	make clean
 	git clean -f -x -d
 em:
